@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Геометрична множина точок</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+        #results {
+            border: 1px solid black;
+            padding: 10px;
+            width: 200px;
+            font-family: Arial, sans-serif;
+            margin-top: 20px;
+        }
+        #switchButton {
+        background-color: #4CAF50; 
+        color: white; 
+        padding: 15px 32px; 
+        text-align: center;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        border-radius: 8px; 
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    #switchButton:hover {
+        background-color: #45a049; 
+        transform: scale(1.05); 
+    }
+    </style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="1000" height="600"></canvas>
+<button id="switchButton">Перемкнути випадок</button>
+
+<div id="results">
+    <p id="resultsText">Намальовано точок: 0 для p = 0</p>
+</div>
+
+<script>
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
+    //координати A і B
+    const A = { x: 200, y: 400 };
+    const B = { x: 500, y: 400 };
+
+    //відстань між точками A і B
+    const c = Math.abs(B.x - A.x);
+
+    function drawPoints() {
+        ctx.beginPath();
+        ctx.arc(A.x, A.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(B.x, B.y, 5, 0, 2 * Math.PI);
+        ctx.fillStyle = "blue";
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    function drawSet(p) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawPoints();
+
+        let pointCount = 0; 
+        const tolerance = p / 1000; 
+
+        for (let x = 0; x < canvas.width; x++) {
+            for (let y = 0; y < canvas.height; y++) {
+                const distanceA = Math.sqrt((x - A.x) ** 2 + (y - A.y) ** 2);
+                const distanceB = Math.sqrt((x - B.x) ** 2 + (y - B.y) ** 2);
+
+                //|MA| * |MB| = p 
+                if (Math.abs(distanceA * distanceB - p) < tolerance) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, 2 * Math.PI); 
+                    ctx.fillStyle = "purple";
+                    ctx.fill();
+                    pointCount++; 
+                }
+            }
+        }
+
+        document.getElementById("resultsText").textContent = `Намальовано точок: ${pointCount} для p = ${p}`;
+    }
+
+    const p1 = (c ** 2) / 4;
+    const p2 = (c ** 2) / 6;
+    const p3 = (c ** 2) / 3;
+    const p4 = (c ** 2) / 2;
+
+    const pArray = [p1, p2, p3, p4];
+    let currentCase = 0; 
+
+
+    function switchCase() {
+        currentCase = (currentCase + 1) % pArray.length; 
+        drawSet(pArray[currentCase]); 
+    }
+
+    document.getElementById("switchButton").addEventListener("click", switchCase);
+
+    drawSet(pArray[currentCase]);
+</script>
+
+</body>
+</html>
